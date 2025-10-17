@@ -1,0 +1,23 @@
+{
+  "name": "minuki",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/testuser0123-web/inagawa.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/testuser0123-web/inagawa/issues"
+  },
+  "homepage": "https://github.com/testuser0123-web/inagawa#readme",
+  "description": "",
+  "dependencies": {
+    "@vercel/postgres": "^0.10.0"
+  }
+}

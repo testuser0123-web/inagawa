@@ -8,6 +8,7 @@
 </head>
 <body>
     <div class="container">
+      <div id="counter-display" class="inagawa">0円</div>
       <h1 class="title"><span>みぬき</span>ボタン</h1>
       <div class="tkmk-button">
           <div id="tkmkBtnVisual" class="Btn-visual">
@@ -26,7 +27,7 @@
           </div>
           <div class="real-btn"></div>
       </div>
-      <p class="inagawa">jΣﾐｲ˶º ᴗº˶ﾘ　ᶘｲ^⇁^ﾅ川</p>
+      <p class="swap-text">jΣﾐｲ˶º ᴗº˶ﾘ　ᶘｲ^⇁^ﾅ川</p>
       <p class="effect-text"><bt><span>₊</span><span>˚</span><span>⊹</span><span>.</span><span>*</span><span> </span><span>♡</span><span> </span><span>*</span><span>.</span><span>⊹</span><span>˚</span><span>₊</span>
     &lpar;⊃∩⊂&rpar;</p>
     </div>
@@ -34,12 +35,39 @@
     <script>
         const btnPush = document.getElementById('btnpush');
         const realBtn = document.querySelector('.real-btn');
+        const counterDisplay = document.getElementById('counter-display');
+        const swapTextElement = document.querySelector('.swap-text'); // Get the new swap element
+
+        // Helper to format the number
+        const formatCurrency = (num) => {
+          if (typeof num !== 'number') return '---';
+          return `${num.toLocaleString()}円`;
+        };
+
+        // On page load, setup DB and get initial count
+        document.addEventListener('DOMContentLoaded', async () => {
+          // This part will only work when running with a server (like `vercel dev`)
+          // that can run the /api functions.
+          try {
+            await fetch('/api/setup-database', { method: 'POST' });
+            const response = await fetch('/api/get-count');
+            const data = await response.json();
+            if (counterDisplay) {
+              counterDisplay.textContent = formatCurrency(data.count);
+            }
+          } catch (error) {
+            console.error("Counter feature requires a server environment (like 'vercel dev') to run.", error);
+            if (counterDisplay) {
+              counterDisplay.textContent = "サーバー接続エラー";
+            }
+          }
+        });
 
         if (realBtn && btnPush) {
-            const pushButton = () => {
+            const pushButton = async () => {
                 btnPush.classList.add('pushed');
 
-                // Handle .effect-text animation
+                // 1. Trigger text animation
                 const effectText = document.querySelector('.effect-text');
                 if (effectText) {
                   effectText.classList.remove('start-animation');
@@ -48,17 +76,25 @@
                   }, 10);
                 }
 
-                // Handle .inagawa text swap
-                const inagawaText = document.querySelector('.inagawa');
-                if (inagawaText) {
-                  const originalInagawaText = 'jΣﾐｲ˶º ᴗº˶ﾘ　ᶘｲ^⇁^ﾅ川';
-                  const newInagawaText = 'jΣﾐｲ˶^ ᴗ^˶ﾘ　ᶘｲ>⇁<ﾅ川';
-                  
-                  inagawaText.textContent = newInagawaText;
-
+                // 2. Handle swap-text change
+                if (swapTextElement) {
+                  const originalSwapText = 'jΣﾐｲ˶º ᴗº˶ﾘ　ᶘｲ^⇁^ﾅ川';
+                  const newSwapText = 'jΣﾐｲ˶^ ᴗ^˶ﾘ　ᶘｲ>⇁<ﾅ川';
+                  swapTextElement.textContent = newSwapText;
                   setTimeout(() => {
-                    inagawaText.textContent = originalInagawaText;
-                  }, 1700); // Animation duration
+                    swapTextElement.textContent = originalSwapText;
+                  }, 1700); // Sync with effect-text animation duration
+                }
+
+                // 3. Increment counter via API
+                try {
+                  const response = await fetch('/api/increment-count', { method: 'POST' });
+                  const data = await response.json();
+                  if (counterDisplay) {
+                    counterDisplay.textContent = formatCurrency(data.count);
+                  }
+                } catch (error) {
+                  console.error("Failed to increment counter. Is the server running?", error);
                 }
             };
 
