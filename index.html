@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+      <h1 class="title"><span>みぬき</span>ボタン</h1>
+      <div class="tkmk-button">
+          <div id="tkmkBtnVisual" class="Btn-visual">
+              <span class="layer btn-hole">
+                <img src="./assets/btn-hole.png" alt="" aria-hidden="true">
+              </span>
+              <span class="layer btn-top">
+                <img src="./assets/btn-top.png" alt="" aria-hidden="true">
+              </span>
+              <span class="layer btn-btm">
+                <img src="./assets/btn-btm.png" alt="" aria-hidden="true">
+              </span>
+              <span id="btnpush" class="layer btn-main">
+                <img src="./assets/btn-main.png" alt="" aria-hidden="true">
+              </span>
+          </div>
+          <div class="real-btn"></div>
+      </div>
+      <p class="inagawa">jΣﾐｲ˶º ᴗº˶ﾘ　ᶘｲ^⇁^ﾅ川</p>
+      <p class="effect-text"><bt><span>₊</span><span>˚</span><span>⊹</span><span>.</span><span>*</span><span> </span><span>♡</span><span> </span><span>*</span><span>.</span><span>⊹</span><span>˚</span><span>₊</span>
+    &lpar;⊃∩⊂&rpar;</p>
+    </div>
+
+    <script>
+        const btnPush = document.getElementById('btnpush');
+        const realBtn = document.querySelector('.real-btn');
+
+        if (realBtn && btnPush) {
+            const pushButton = () => {
+                btnPush.classList.add('pushed');
+
+                // Handle .effect-text animation
+                const effectText = document.querySelector('.effect-text');
+                if (effectText) {
+                  effectText.classList.remove('start-animation');
+                  setTimeout(() => {
+                    effectText.classList.add('start-animation');
+                  }, 10);
+                }
+
+                // Handle .inagawa text swap
+                const inagawaText = document.querySelector('.inagawa');
+                if (inagawaText) {
+                  const originalInagawaText = 'jΣﾐｲ˶º ᴗº˶ﾘ　ᶘｲ^⇁^ﾅ川';
+                  const newInagawaText = 'jΣﾐｲ˶^ ᴗ^˶ﾘ　ᶘｲ>⇁<ﾅ川';
+                  
+                  inagawaText.textContent = newInagawaText;
+
+                  setTimeout(() => {
+                    inagawaText.textContent = originalInagawaText;
+                  }, 1700); // Animation duration
+                }
+            };
+
+            const releaseButton = () => {
+                btnPush.classList.remove('pushed');
+            };
+
+            realBtn.addEventListener('mousedown', pushButton);
+            realBtn.addEventListener('mouseup', releaseButton);
+            realBtn.addEventListener('mouseleave', releaseButton);
+
+            realBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                pushButton();
+            }, { passive: false });
+            realBtn.addEventListener('touchend', releaseButton);
+        }
+    </script>
+</body>
+</html>
