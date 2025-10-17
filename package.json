@@ -18,6 +18,8 @@
   "homepage": "https://github.com/testuser0123-web/inagawa#readme",
   "description": "",
   "dependencies": {
-    "@vercel/postgres": "^0.10.0"
+    "@neondatabase/serverless": "^1.0.2",
+    "@vercel/postgres": "^0.10.0",
+    "vercel": "^48.4.0"
   }
 }

@@ -1,20 +1,27 @@
-import { sql } from '@vercel/postgres';
+import { neon } from "@neondatabase/serverless";
 
-export default async function handler(request, response) {
+export default async function handler(req, res) {
   try {
-    // Create the counters table if it doesn't exist
-    await sql`CREATE TABLE IF NOT EXISTS counters (id SERIAL PRIMARY KEY, name VARCHAR(255) UNIQUE, count INT);`;
+    const sql = neon(process.env.POSTGRES_URL);
 
-    // Check if the 'inagawa_counter' exists
-    const { rows } = await sql`SELECT * FROM counters WHERE name = 'inagawa_counter';`;
+    // テーブルを作成
+    await sql`
+      CREATE TABLE IF NOT EXISTS button_counter (
+        id SERIAL PRIMARY KEY,
+        count INTEGER DEFAULT 0,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
 
-    // If it doesn't exist, insert it with a count of 0
-    if (rows.length === 0) {
-      await sql`INSERT INTO counters (name, count) VALUES ('inagawa_counter', 0);`;
+    // 初期データがなければ挿入
+    const result = await sql`SELECT COUNT(*) as count FROM button_counter`;
+    if (parseInt(result[0].count) === 0) {
+      await sql`INSERT INTO button_counter (count) VALUES (0)`;
     }
 
-    return response.status(200).json({ message: 'Database initialized successfully.' });
+    res.status(200).json({ message: "Database ready" });
   } catch (error) {
-    return response.status(500).json({ error: error.message });
+    console.error("Database setup error:", error);
+    res.status(500).json({ error: error.message });
   }
 }

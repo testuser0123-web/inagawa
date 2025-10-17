@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="container">
-      <div id="counter-display" class="inagawa">0円</div>
+      <div id="counter-display" class="inagawa">読み込み中。。。</div>
       <h1 class="title"><span>みぬき</span>ボタン</h1>
       <div class="tkmk-button">
           <div id="tkmkBtnVisual" class="Btn-visual">
@@ -46,22 +46,25 @@
 
         // On page load, setup DB and get initial count
         document.addEventListener('DOMContentLoaded', async () => {
-          // This part will only work when running with a server (like `vercel dev`)
-          // that can run the /api functions.
-          try {
-            await fetch('/api/setup-database', { method: 'POST' });
-            const response = await fetch('/api/get-count');
-            const data = await response.json();
-            if (counterDisplay) {
-              counterDisplay.textContent = formatCurrency(data.count);
+            try {
+                // setup-databaseの完了を待つ
+                await fetch('/api/setup-database', { method: 'POST' });
+                
+                // get-countの完了を待つ
+                const response = await fetch('/api/get-count');
+                const data = await response.json();
+                
+                // データ取得完了後に表示
+                if (counterDisplay && data.count !== undefined) {
+                counterDisplay.textContent = formatCurrency(data.count);
+                }
+            } catch (error) {
+                console.error("Database connection error:", error);
+                if (counterDisplay) {
+                counterDisplay.textContent = "接続エラー";
+                }
             }
-          } catch (error) {
-            console.error("Counter feature requires a server environment (like 'vercel dev') to run.", error);
-            if (counterDisplay) {
-              counterDisplay.textContent = "サーバー接続エラー";
-            }
-          }
-        });
+            });
 
         if (realBtn && btnPush) {
             const pushButton = async () => {

@@ -1,25 +1,20 @@
-import { sql } from '@vercel/postgres';
+import { neon } from "@neondatabase/serverless";
 
-export default async function handler(request, response) {
-  // Allow requests from all origins
-  response.setHeader('Access-Control-Allow-Origin', '*');
-  response.setHeader('Access-Control-Allow-Methods', 'GET, POST');
-  response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-  if (request.method === 'OPTIONS') {
-    return response.status(200).end();
-  }
-
+export default async function handler(req, res) {
   try {
-    // Increment the count by 3000
-    await sql`UPDATE counters SET count = count + 3000 WHERE name = 'inagawa_counter';`;
+    const sql = neon(process.env.POSTGRES_URL);
 
-    // Get the new count
-    const { rows } = await sql`SELECT count FROM counters WHERE name = 'inagawa_counter';`;
-    const count = rows[0]?.count || 0;
+    const result = await sql`
+      UPDATE button_counter 
+      SET count = count - 3000, updated_at = CURRENT_TIMESTAMP
+      WHERE id = 1
+      RETURNING count
+    `;
 
-    return response.status(200).json({ count });
+    const count = result[0].count;
+    res.status(200).json({ count });
   } catch (error) {
-    return response.status(500).json({ error: error.message });
+    console.error("Increment error:", error);
+    res.status(500).json({ error: error.message });
   }
 }
