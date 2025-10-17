@@ -41,7 +41,7 @@
         // Helper to format the number
         const formatCurrency = (num) => {
           if (typeof num !== 'number') return '---';
-          return `${num.toLocaleString()}円`;
+          return `おこづかい:${num.toLocaleString()}円`;
         };
 
         // On page load, setup DB and get initial count
@@ -87,6 +87,16 @@
                   setTimeout(() => {
                     swapTextElement.textContent = originalSwapText;
                   }, 1700); // Sync with effect-text animation duration
+                }
+
+                 // 3. 先に画面のカウンターを更新する (楽観的更新)
+                let originalCount = 0; // エラー時に元に戻すために現在の値を保持
+                if (counterDisplay) {
+                // formatCurrencyの逆変換を想定していますが、実際の状況に合わせて調整してください
+                const currentCount = -parseInt(counterDisplay.textContent.replace(/[^0-9]/g, ''), 10) || 0;
+                originalCount = currentCount;
+                const newCount = currentCount - 3000;
+                counterDisplay.textContent = formatCurrency(newCount);
                 }
 
                 // 3. Increment counter via API
