@@ -8,7 +8,8 @@ export default async function handler(req, res) {
       SELECT count FROM button_counter WHERE id = 1
     `;
 
-    const count = result[0]?.count || 0;
+    const rawCount = result[0]?.count ?? 0;
+    const count = Number(rawCount); // ← ここで数値化
     res.status(200).json({ count });
   } catch (error) {
     console.error("Get count error:", error);
